@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+
+    <title>Hello, world!</title>
+</head>
+<body>
+<div class="container mt-5">
+    <div class="row bg-light">
+        <div class="col-4 p-3">
+            <h3>智能对话及情感分析可视化系统</h3>
+            <hr/>
+            <p>请选择聊天机器人</p>
+
+            <div class="m-2">
+                <input type="radio" class="btn-check" name="options" id="robot_1" autocomplete="off" checked/>
+                <label class="btn btn-outline-primary" for="robot_1">btn1</label>
+            </div>
+
+            <div class="m-2">
+                <input type="radio" class="btn-check" name="options" id="robot_2" autocomplete="off"/>
+                <label class="btn btn-outline-primary" for="robot_2">btn2</label>
+            </div>
+
+            <div class="m-2">
+                <input type="radio" class="btn-check" name="options" id="robot_3" autocomplete="off"/>
+                <label class="btn btn-outline-primary" for="robot_3">btn3</label>
+            </div>
+
+
+        </div>
+        <div class="col-8 bg-white p-4">
+            <label class="form-label">
+                <input id="sendMsg" type="text" class="form-control" placeholder="请输入..."/>
+            </label>
+            <br/>
+            <br/>
+            <div class="btn-group">
+                <button class="btn btn-primary" id="sendBtn">发送信息</button>
+                <button class="btn btn-success" id="cleanBtn">消除记忆</button>
+            </div>
+            <br/>
+            <br/>
+            <p>机器人：<span id="response"></span></p>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
+        crossorigin="anonymous"></script>
+
+<script>
+    document.getElementById("sendBtn").addEventListener("click", function () {
+        let sendMessage = document.getElementById("sendMsg")
+        let options = document.getElementsByName("options")
+
+        let robot = undefined
+        for (let i = 0; i < options.length; ++i) {
+            if (options[i].checked) {
+                robot = options[i].id
+            }
+        }
+
+        let response = document.getElementById("response")
+        let text = sendMessage.value
+
+        if (text === undefined || text.toString().length === 0) {
+            response.innerText = "请输入文字"
+            return
+        }
+
+        fetch('/api', {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                'text': text,
+                'robot': robot
+            })
+        }).then(res => res.json()).then(res => {
+            console.log(res)
+            response.innerText = `${res.robot}： ${res.text}`
+            // console.log(`btn onclick, res = ${res}`)
+        })
+    })
+
+    document.getElementById("cleanBtn").addEventListener('click', function () {
+        document.getElementById("response").innerText = ''
+    })
+
+</script>
+
+</body>
+</html>
